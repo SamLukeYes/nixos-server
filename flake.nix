@@ -22,9 +22,8 @@
     system = "x86_64-linux";
     channel-patches = [
       # Add nixpkgs patches here
+      ./patches/359365.patch
     ];
-    nixpkgs-patched =
-      flake-utils-plus.lib.patchChannel system nixpkgs channel-patches;
 
   in flake-utils-plus.lib.mkFlake rec {
     inherit self inputs;
@@ -43,7 +42,6 @@
 
       modules = [
         {
-          environment.etc."nix/inputs/nixpkgs-patched".source = nixpkgs-patched;
           nix = {
             generateNixPathFromInputs = true;
             generateRegistryFromInputs = true;

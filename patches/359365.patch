@@ -1,0 +1,511 @@
+From f6872473eabbd651e9283cfc714b0b9797b47a92 Mon Sep 17 00:00:00 2001
+From: codgician <15964984+codgician@users.noreply.github.com>
+Date: Wed, 27 Nov 2024 21:23:30 +0800
+Subject: [PATCH 1/7] nixos/azure: move image specific config out of
+ azure-common
+
+---
+ nixos/modules/virtualisation/azure-common.nix | 90 +++++++++----------
+ .../virtualisation/azure-config-user.nix      |  8 +-
+ nixos/modules/virtualisation/azure-image.nix  | 37 +++++++-
+ 3 files changed, 85 insertions(+), 50 deletions(-)
+
+diff --git a/nixos/modules/virtualisation/azure-common.nix b/nixos/modules/virtualisation/azure-common.nix
+index d8d835dd303d6..cde10f25ea448 100644
+--- a/nixos/modules/virtualisation/azure-common.nix
++++ b/nixos/modules/virtualisation/azure-common.nix
+@@ -1,9 +1,18 @@
+-{ config, lib, pkgs, ... }:
++{
++  config,
++  lib,
++  pkgs,
++  ...
++}:
+ 
+ with lib;
+ let
+   cfg = config.virtualisation.azure;
+-  mlxDrivers = [ "mlx4_en" "mlx4_core" "mlx5_core" ];
++  mlxDrivers = [
++    "mlx4_en"
++    "mlx4_core"
++    "mlx5_core"
++  ];
+ in
+ {
+   options.virtualisation.azure = {
+@@ -13,16 +22,25 @@ in
+     };
+   };
+ 
+-  imports = [
+-    ../profiles/headless.nix
+-    ./azure-agent.nix
+-  ];
+-
+   config = {
+-    virtualisation.azure.agent.enable = true;
+-
+-    boot.kernelParams = [ "console=ttyS0" "earlyprintk=ttyS0" "rootdelay=300" "panic=1" "boot.panic_on_fail" ];
+-    boot.initrd.kernelModules = [ "hv_vmbus" "hv_netvsc" "hv_utils" "hv_storvsc" ];
++    services.waagent.enable = true;
++    services.cloud-init.enable = true;
++    services.cloud-init.network.enable = true;
++    systemd.services.cloud-config.serviceConfig.Restart = "on-failure";
++
++    boot.kernelParams = [
++      "console=ttyS0"
++      "earlyprintk=ttyS0"
++      "rootdelay=300"
++      "panic=1"
++      "boot.panic_on_fail"
++    ];
++    boot.initrd.kernelModules = [
++      "hv_vmbus"
++      "hv_netvsc"
++      "hv_utils"
++      "hv_storvsc"
++    ];
+     boot.initrd.availableKernelModules = lib.optionals cfg.acceleratedNetworking mlxDrivers;
+ 
+     # Accelerated networking
+@@ -30,19 +48,9 @@ in
+       matchConfig.Driver = mlxDrivers;
+       linkConfig.Unmanaged = "yes";
+     };
+-    networking.networkmanager.unmanaged = lib.mkIf cfg.acceleratedNetworking
+-      (builtins.map (drv: "driver:${drv}") mlxDrivers);
+-
+-    # Generate a GRUB menu.
+-    boot.loader.grub.device = "/dev/sda";
+-
+-    boot.growPartition = true;
+-
+-    fileSystems."/" = {
+-      device = "/dev/disk/by-label/nixos";
+-      fsType = "ext4";
+-      autoResize = true;
+-    };
++    networking.networkmanager.unmanaged = lib.mkIf cfg.acceleratedNetworking (
++      builtins.map (drv: "driver:${drv}") mlxDrivers
++    );
+ 
+     # Allow root logins only using the SSH key that the user specified
+     # at instance creation time, ping client connections to avoid timeouts
+@@ -55,31 +63,19 @@ in
+ 
+     # Always include cryptsetup so that NixOps can use it.
+     # sg_scan is needed to finalize disk removal on older kernels
+-    environment.systemPackages = [ pkgs.cryptsetup pkgs.sg3_utils ];
++    environment.systemPackages = [
++      pkgs.cryptsetup
++      pkgs.sg3_utils
++    ];
+ 
+     networking.usePredictableInterfaceNames = false;
+ 
+-    services.udev.extraRules = ''
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:0", ATTR{removable}=="0", SYMLINK+="disk/by-lun/0",
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:1", ATTR{removable}=="0", SYMLINK+="disk/by-lun/1",
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:2", ATTR{removable}=="0", SYMLINK+="disk/by-lun/2"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:3", ATTR{removable}=="0", SYMLINK+="disk/by-lun/3"
+-
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:4", ATTR{removable}=="0", SYMLINK+="disk/by-lun/4"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:5", ATTR{removable}=="0", SYMLINK+="disk/by-lun/5"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:6", ATTR{removable}=="0", SYMLINK+="disk/by-lun/6"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:7", ATTR{removable}=="0", SYMLINK+="disk/by-lun/7"
+-
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:8", ATTR{removable}=="0", SYMLINK+="disk/by-lun/8"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:9", ATTR{removable}=="0", SYMLINK+="disk/by-lun/9"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:10", ATTR{removable}=="0", SYMLINK+="disk/by-lun/10"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:11", ATTR{removable}=="0", SYMLINK+="disk/by-lun/11"
+-
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:12", ATTR{removable}=="0", SYMLINK+="disk/by-lun/12"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:13", ATTR{removable}=="0", SYMLINK+="disk/by-lun/13"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:14", ATTR{removable}=="0", SYMLINK+="disk/by-lun/14"
+-      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:15", ATTR{removable}=="0", SYMLINK+="disk/by-lun/15"
+-
+-    '';
++    services.udev.extraRules =
++      with builtins;
++      concatStringsSep "\n" (
++        map (i: ''
++          ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:${toString i}", ATTR{removable}=="0", SYMLINK+="disk/by-lun/${toString i}"
++        '') (lib.range 1 15)
++      );
+   };
+ }
+diff --git a/nixos/modules/virtualisation/azure-config-user.nix b/nixos/modules/virtualisation/azure-config-user.nix
+index 267ba50ae025a..aa00ac1f40613 100644
+--- a/nixos/modules/virtualisation/azure-config-user.nix
++++ b/nixos/modules/virtualisation/azure-config-user.nix
+@@ -8,5 +8,11 @@
+   # This configures everything but bootstrap services,
+   # which only need to be run once and have already finished
+   # if you are able to see this comment.
+-  imports = [ "${modulesPath}/virtualisation/azure-common.nix" ];
++  imports = [
++    "${modulesPath}/virtualisation/azure-common.nix"
++    "${modulesPath}/virtualisation/azure-image.nix"
++  ];
++
++  # Please update the VM Generation to the actual value
++  virtualisation.azureImage.vmGeneration = "v1";
+ }
+diff --git a/nixos/modules/virtualisation/azure-image.nix b/nixos/modules/virtualisation/azure-image.nix
+index 53021e635b073..59e41c0637471 100644
+--- a/nixos/modules/virtualisation/azure-image.nix
++++ b/nixos/modules/virtualisation/azure-image.nix
+@@ -46,6 +46,14 @@ in
+       '';
+     };
+ 
++    label = mkOption {
++      type = types.str;
++      default = "nixos";
++      description = ''
++        NixOS partition label.
++      '';
++    };
++
+     vmGeneration = mkOption {
+       type =
+         with types;
+@@ -76,11 +84,36 @@ in
+       format = "raw";
+ 
+       bootSize = "${toString cfg.bootSize}M";
+-      partitionTableType = if cfg.vmGeneration == "v2" then "efi" else "legacy";
++      partitionTableType = if (cfg.vmGeneration == "v2") then "efi" else "legacy";
+ 
+-      inherit (cfg) contents;
++      inherit (cfg) contents label;
+       inherit (config.virtualisation) diskSize;
+       inherit config lib pkgs;
+     };
++
++    boot.growPartition = true;
++    boot.loader.grub = rec {
++      efiSupport = (cfg.vmGeneration == "v2");
++      device = if efiSupport then "nodev" else "/dev/sda";
++      efiInstallAsRemovable = efiSupport;
++      extraConfig = ''
++        serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
++        terminal_input --append serial
++        terminal_output --append serial
++      '';
++    };
++
++    fileSystems = {
++      "/" = {
++        device = "/dev/disk/by-label/${cfg.label}";
++        fsType = "ext4";
++        autoResize = true;
++      };
++
++      "/boot" = lib.mkIf (cfg.vmGeneration == "v2") {
++        device = "/dev/disk/by-label/ESP";
++        fsType = "vfat";
++      };
++    };
+   };
+ }
+
+From d738c15f2b348ff0945e4d3af0b8547c23262c23 Mon Sep 17 00:00:00 2001
+From: codgician <15964984+codgician@users.noreply.github.com>
+Date: Thu, 28 Nov 2024 01:05:58 +0800
+Subject: [PATCH 2/7] azure-image: set font & splashImage to null to force text
+ mode, so console for Gen 2 VM could work
+
+---
+ nixos/modules/virtualisation/azure-image.nix | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/nixos/modules/virtualisation/azure-image.nix b/nixos/modules/virtualisation/azure-image.nix
+index 59e41c0637471..4ae8849d50047 100644
+--- a/nixos/modules/virtualisation/azure-image.nix
++++ b/nixos/modules/virtualisation/azure-image.nix
+@@ -96,7 +96,9 @@ in
+       efiSupport = (cfg.vmGeneration == "v2");
+       device = if efiSupport then "nodev" else "/dev/sda";
+       efiInstallAsRemovable = efiSupport;
+-      extraConfig = ''
++      font = null;
++      splashImage = null;
++      extraConfig = lib.mkIf (!efiSupport) ''
+         serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
+         terminal_input --append serial
+         terminal_output --append serial
+
+From a02202884c3ab48ffaecbdb913b5176d937db13b Mon Sep 17 00:00:00 2001
+From: codgician <15964984+codgician@users.noreply.github.com>
+Date: Fri, 29 Nov 2024 10:18:18 +0800
+Subject: [PATCH 3/7] nixos/azure: improve documentation
+
+---
+ nixos/doc/manual/release-notes/rl-2505.section.md |  2 ++
+ nixos/modules/virtualisation/azure-common.nix     | 13 +++++++++++--
+ nixos/modules/virtualisation/azure-image.nix      | 11 ++++++++++-
+ 3 files changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/nixos/doc/manual/release-notes/rl-2505.section.md b/nixos/doc/manual/release-notes/rl-2505.section.md
+index 5079ca7414699..88ba3fc2d6b08 100644
+--- a/nixos/doc/manual/release-notes/rl-2505.section.md
++++ b/nixos/doc/manual/release-notes/rl-2505.section.md
+@@ -119,6 +119,8 @@
+ 
+ - Support for CUDA 10 has been dropped, as announced in the 24.11 release notes.
+ 
++- `virtualisation/azure-common.nix`'s filesystem and grub configurations have been moved to `virtualisation/azure-image.nix`. This makes `azure-common.nix` more generic so it could be used for users who generate Azure image using other methods (e.g. nixos-generators and disko). For existing users depending on these configurations, please also import `azure-image.nix`.
++
+ - `zammad` has had its support for MySQL removed, since it was never working correctly and is now deprecated upstream. Check the [migration guide](https://docs.zammad.org/en/latest/appendix/migrate-to-postgresql.html) for how to convert your database to PostgreSQL.
+ 
+ - `nodePackages.vls` has been deprecated, as the upstream consumer of it, vetur, has been deprecated by upstream. Upstream suggests migrating to Volar for Vue LSP tooling instead.
+diff --git a/nixos/modules/virtualisation/azure-common.nix b/nixos/modules/virtualisation/azure-common.nix
+index cde10f25ea448..6d36838f9eaa8 100644
+--- a/nixos/modules/virtualisation/azure-common.nix
++++ b/nixos/modules/virtualisation/azure-common.nix
+@@ -24,10 +24,16 @@ in
+ 
+   config = {
+     services.waagent.enable = true;
++
++    # Enable cloud-init by default for waagent.
++    # Otherwise waagent would try manage networking using ifupdown,
++    # which is currently not availeble in nixpkgs.
+     services.cloud-init.enable = true;
+     services.cloud-init.network.enable = true;
+     systemd.services.cloud-config.serviceConfig.Restart = "on-failure";
+ 
++    # Ensure kernel outputs to ttyS0 (Azure Serial Console),
++    # and reboot machine upon fatal boot issues
+     boot.kernelParams = [
+       "console=ttyS0"
+       "earlyprintk=ttyS0"
+@@ -35,15 +41,18 @@ in
+       "panic=1"
+       "boot.panic_on_fail"
+     ];
++
++    # Load Hyper-V kernel modules
+     boot.initrd.kernelModules = [
+       "hv_vmbus"
+       "hv_netvsc"
+       "hv_utils"
+       "hv_storvsc"
+     ];
+-    boot.initrd.availableKernelModules = lib.optionals cfg.acceleratedNetworking mlxDrivers;
+ 
+-    # Accelerated networking
++    # Accelerated networking, configured following:
++    # https://learn.microsoft.com/en-us/azure/virtual-network/accelerated-networking-overview
++    boot.initrd.availableKernelModules = lib.optionals cfg.acceleratedNetworking mlxDrivers;
+     systemd.network.networks."99-azure-unmanaged-devices.network" = lib.mkIf cfg.acceleratedNetworking {
+       matchConfig.Driver = mlxDrivers;
+       linkConfig.Unmanaged = "yes";
+diff --git a/nixos/modules/virtualisation/azure-image.nix b/nixos/modules/virtualisation/azure-image.nix
+index 4ae8849d50047..252381d0f198b 100644
+--- a/nixos/modules/virtualisation/azure-image.nix
++++ b/nixos/modules/virtualisation/azure-image.nix
+@@ -76,12 +76,15 @@ in
+     system.build.azureImage = import ../../lib/make-disk-image.nix {
+       name = "azure-image";
+       inherit (config.image) baseName;
++
++      # Azure expects vhd format with fixed size,
++      # generating raw format and convert with subformat args afterwards
++      format = "raw";
+       postVM = ''
+         ${pkgs.vmTools.qemu}/bin/qemu-img convert -f raw -o subformat=fixed,force_size -O vpc $diskImage $out/${config.image.fileName}
+         rm $diskImage
+       '';
+       configFile = ./azure-config-user.nix;
+-      format = "raw";
+ 
+       bootSize = "${toString cfg.bootSize}M";
+       partitionTableType = if (cfg.vmGeneration == "v2") then "efi" else "legacy";
+@@ -96,8 +99,13 @@ in
+       efiSupport = (cfg.vmGeneration == "v2");
+       device = if efiSupport then "nodev" else "/dev/sda";
+       efiInstallAsRemovable = efiSupport;
++      # Force grub to run in text mode and output to console
++      # by disabling font and splash image
+       font = null;
+       splashImage = null;
++      # For Gen 1 VM, configurate grub output to serial_com0.
++      # Not needed for Gen 2 VM wbere serial_com0 does not exist,
++      # and outputing to console is enough to make Azure Serial Console working
+       extraConfig = lib.mkIf (!efiSupport) ''
+         serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
+         terminal_input --append serial
+@@ -108,6 +116,7 @@ in
+     fileSystems = {
+       "/" = {
+         device = "/dev/disk/by-label/${cfg.label}";
++        inherit (cfg) label;
+         fsType = "ext4";
+         autoResize = true;
+       };
+
+From 02103c37fb5e6bcc1e3e27ba720bf1d77ce55763 Mon Sep 17 00:00:00 2001
+From: codgician <15964984+codgician@users.noreply.github.com>
+Date: Mon, 16 Dec 2024 12:16:20 +0800
+Subject: [PATCH 4/7] nixos/waagent: specify OS.OpensslPath by default
+
+---
+ nixos/modules/virtualisation/waagent.nix | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/nixos/modules/virtualisation/waagent.nix b/nixos/modules/virtualisation/waagent.nix
+index afdcfd6ebe350..e3436a21d9c22 100644
+--- a/nixos/modules/virtualisation/waagent.nix
++++ b/nixos/modules/virtualisation/waagent.nix
+@@ -192,6 +192,15 @@ let
+             If set to `null`, the system defaults are used.
+           '';
+         };
++
++        OpensslPath = lib.mkOption {
++          type = types.nullOr types.path;
++          default = lib.getExe pkgs.openssl;
++          defaultText = literalExpression "lib.getExe pkgs.openssl";
++          description = ''
++            Specify a path for the openssl binary to use for cryptographic operations.
++          '';
++        };
+       };
+ 
+       HttpProxy = {
+
+From 64337255ba542dd906c5e6c6828e46a3c8287c72 Mon Sep 17 00:00:00 2001
+From: codgician <15964984+codgician@users.noreply.github.com>
+Date: Mon, 16 Dec 2024 19:49:19 +0800
+Subject: [PATCH 5/7] waagent: fix typo
+
+---
+ nixos/modules/virtualisation/waagent.nix | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/nixos/modules/virtualisation/waagent.nix b/nixos/modules/virtualisation/waagent.nix
+index e3436a21d9c22..c90f7a999a42a 100644
+--- a/nixos/modules/virtualisation/waagent.nix
++++ b/nixos/modules/virtualisation/waagent.nix
+@@ -31,7 +31,7 @@ let
+       attrsOf (
+         either atom (attrsOf atom)
+         // {
+-          description = atom.description + "or an attribute set of them";
++          description = atom.description + " or an attribute set of them";
+         }
+       );
+     generate =
+
+From 592f23da7e575ee760dab6c2c8cadc57e82abbf9 Mon Sep 17 00:00:00 2001
+From: codgician <15964984+codgician@users.noreply.github.com>
+Date: Fri, 20 Dec 2024 19:27:53 +0800
+Subject: [PATCH 6/7] waagent: remove passthru.updateScript as it is not needed
+ for nixpkgs-update
+
+---
+ pkgs/by-name/wa/waagent/package.nix | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/pkgs/by-name/wa/waagent/package.nix b/pkgs/by-name/wa/waagent/package.nix
+index ab490373aaa53..931e4131cad0b 100644
+--- a/pkgs/by-name/wa/waagent/package.nix
++++ b/pkgs/by-name/wa/waagent/package.nix
+@@ -4,7 +4,6 @@
+   lib,
+   python3,
+   bash,
+-  gitUpdater,
+   nixosTests,
+ }:
+ 
+@@ -65,13 +64,8 @@ python.pkgs.buildPythonApplication rec {
+ 
+   dontWrapPythonPrograms = false;
+ 
+-  passthru = {
+-    tests = {
+-      inherit (nixosTests) waagent;
+-    };
+-    updateScript = gitUpdater {
+-      rev-prefix = "v";
+-    };
++  passthru.tests = {
++    inherit (nixosTests) waagent;
+   };
+ 
+   meta = {
+
+From f5908be619aac5febce2c2dbbf4da1b308e53828 Mon Sep 17 00:00:00 2001
+From: codgician <15964984+codgician@users.noreply.github.com>
+Date: Sun, 29 Dec 2024 19:07:38 +0800
+Subject: [PATCH 7/7] nixos/azure: improve code readability
+
+---
+ nixos/modules/virtualisation/azure-common.nix     | 15 +++++----------
+ .../modules/virtualisation/azure-config-user.nix  |  4 ++--
+ 2 files changed, 7 insertions(+), 12 deletions(-)
+
+diff --git a/nixos/modules/virtualisation/azure-common.nix b/nixos/modules/virtualisation/azure-common.nix
+index 6d36838f9eaa8..654adb65ed292 100644
+--- a/nixos/modules/virtualisation/azure-common.nix
++++ b/nixos/modules/virtualisation/azure-common.nix
+@@ -5,7 +5,6 @@
+   ...
+ }:
+ 
+-with lib;
+ let
+   cfg = config.virtualisation.azure;
+   mlxDrivers = [
+@@ -16,7 +15,7 @@ let
+ in
+ {
+   options.virtualisation.azure = {
+-    acceleratedNetworking = mkOption {
++    acceleratedNetworking = lib.mkOption {
+       default = false;
+       description = "Whether the machine's network interface has enabled accelerated networking.";
+     };
+@@ -68,7 +67,7 @@ in
+     services.openssh.settings.ClientAliveInterval = 180;
+ 
+     # Force getting the hostname from Azure
+-    networking.hostName = mkDefault "";
++    networking.hostName = lib.mkDefault "";
+ 
+     # Always include cryptsetup so that NixOps can use it.
+     # sg_scan is needed to finalize disk removal on older kernels
+@@ -79,12 +78,8 @@ in
+ 
+     networking.usePredictableInterfaceNames = false;
+ 
+-    services.udev.extraRules =
+-      with builtins;
+-      concatStringsSep "\n" (
+-        map (i: ''
+-          ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:${toString i}", ATTR{removable}=="0", SYMLINK+="disk/by-lun/${toString i}"
+-        '') (lib.range 1 15)
+-      );
++    services.udev.extraRules = lib.concatMapStrings (i: ''
++      ENV{DEVTYPE}=="disk", KERNEL!="sda" SUBSYSTEM=="block", SUBSYSTEMS=="scsi", KERNELS=="?:0:0:${toString i}", ATTR{removable}=="0", SYMLINK+="disk/by-lun/${toString i}"
++    '') (lib.range 1 15);
+   };
+ }
+diff --git a/nixos/modules/virtualisation/azure-config-user.nix b/nixos/modules/virtualisation/azure-config-user.nix
+index aa00ac1f40613..75bbc716bf7f2 100644
+--- a/nixos/modules/virtualisation/azure-config-user.nix
++++ b/nixos/modules/virtualisation/azure-config-user.nix
+@@ -13,6 +13,6 @@
+     "${modulesPath}/virtualisation/azure-image.nix"
+   ];
+ 
+-  # Please update the VM Generation to the actual value
+-  virtualisation.azureImage.vmGeneration = "v1";
++  # Please set the VM Generation to the actual value
++  # virtualisation.azureImage.vmGeneration = "v1";
+ }
