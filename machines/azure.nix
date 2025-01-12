@@ -18,6 +18,5 @@
   system.stateVersion = "24.11";
 
   # https://github.com/NixOS/nixpkgs/pull/359365#issuecomment-2564689870
-  networking.useNetworkd = true;
   virtualisation.azure.acceleratedNetworking = true;
 }
