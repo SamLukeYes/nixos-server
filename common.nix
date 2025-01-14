@@ -13,5 +13,11 @@
 
   documentation.nixos.enable = false;
 
+  system = {
+    stateVersion = "24.11";
+    rebuild.enableNg = true;
+    switch.enableNg = true;
+  };
+
   time.timeZone = "Asia/Hong_Kong";
 }
