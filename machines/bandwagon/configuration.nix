@@ -16,8 +16,12 @@
 
   synced.caddy-secret-file = "${config.synced.configDir}/caddy/bandwagon.env";
 
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkfDt1Bv2cjUSRFgZpRC3WBD/zUoY7QWmjnaptYUHXm yes@absolute"
-  ];
+  programs.rust-motd.settings.last_login.root = 5;
+
+  users.users.root = {
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkfDt1Bv2cjUSRFgZpRC3WBD/zUoY7QWmjnaptYUHXm yes@absolute"
+    ];
+  };
 }
 

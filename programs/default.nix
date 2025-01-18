@@ -2,10 +2,8 @@
   imports = [
     ./motd.nix
     ./nix.nix
+    ./xonsh.nix
   ];
 
-  programs = {
-    git.enable = true;
-    xonsh.enable = true;
-  };
+  programs.git.enable = true;
 }

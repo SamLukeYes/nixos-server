@@ -8,6 +8,11 @@
 
   nix.settings.trusted-users = [ "azureuser" ];
 
+  programs.rust-motd.settings = {
+    last_login.azureuser = 5;
+    service_status.waagent = "waagent";
+  };
+
   swapDevices = [{
     device = "/var/swapfile";
     size = 2 * 1024;
