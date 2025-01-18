@@ -9,6 +9,11 @@
       url = "github:SamLukeYes/archix";
     };
 
+    deploy-rs = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:serokell/deploy-rs";
+    };
+
     flake-utils-plus.url = "github:gytis-ivaskevicius/flake-utils-plus";
 
     nix-index-database = {
@@ -66,6 +71,27 @@
       bandwagon.modules = [
         ./machines/bandwagon/configuration.nix
       ];
+    };
+
+    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
+
+    deploy.nodes = {
+      azure = {
+        hostname = "azure";
+        profiles.system = {
+          path = inputs.deploy-rs.lib.${system}.activate.nixos self.nixosConfigurations.azure;
+          sshUser = "azureuser";
+          user = "root";
+        };
+      };
+
+      bandwagon = {
+        hostname = "bandwagon";
+        profiles.system = {
+          path = inputs.deploy-rs.lib.${system}.activate.nixos self.nixosConfigurations.bandwagon;
+          sshUser = "root";
+        };
+      };
     };
 
     nixosModules.synced = import ./services/synced;
