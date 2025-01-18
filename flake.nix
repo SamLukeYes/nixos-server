@@ -49,9 +49,6 @@
           };
         }
 
-        inputs.archix.nixosModules.default
-        ./programs/pacman.nix
-
         inputs.nix-index-database.nixosModules.nix-index
         { programs.nix-index-database.comma.enable = true; }
 
@@ -61,7 +58,13 @@
 
     hosts = {
       azure.modules = [
+        inputs.archix.nixosModules.default
+        ./programs/pacman.nix
         ./machines/azure.nix
+      ];
+
+      bandwagon.modules = [
+        ./machines/bandwagon/configuration.nix
       ];
     };
 
