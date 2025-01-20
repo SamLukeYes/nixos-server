@@ -16,7 +16,12 @@
 
   synced.caddy-secret-file = "${config.synced.configDir}/caddy/bandwagon.env";
 
-  programs.rust-motd.settings.last_login.root = 5;
+  programs.rust-motd.settings = {
+    last_login.root = 5;
+    service_status.qemu-guest-agent = "qemu-guest-agent";
+  };
+
+  services.qemuGuest.enable = true;
 
   users.users.root = {
     openssh.authorizedKeys.keys = [
