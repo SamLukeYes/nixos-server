@@ -23,7 +23,10 @@
     service_status.qemu-guest-agent = "qemu-guest-agent";
   };
 
-  services.qemuGuest.enable = true;
+  services = {
+    openssh.ports = [ 24107 ];
+    qemuGuest.enable = true;
+  };
 
   users.users.root = {
     openssh.authorizedKeys.keys = [

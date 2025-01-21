@@ -1,4 +1,8 @@
+{ ... }:
+
 {
+  programs.rust-motd.settings.service_status.sshd = "sshd";
+
   services.openssh = {
     enable = true;
     settings = {
