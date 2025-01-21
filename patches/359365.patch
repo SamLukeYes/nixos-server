@@ -1,7 +1,7 @@
 From 6b9a77767abaa07847b2353344ca9b07b2c3231a Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Wed, 27 Nov 2024 21:23:30 +0800
-Subject: [PATCH 1/8] nixos/azure: move image specific config out of
+Subject: [PATCH 1/9] nixos/azure: move image specific config out of
  azure-common
 
 ---
@@ -215,7 +215,7 @@ index 53021e635b073..59e41c0637471 100644
 From 0a0f6543ad671e7435fdb131590a2d5bccd9140a Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Thu, 28 Nov 2024 01:05:58 +0800
-Subject: [PATCH 2/8] azure-image: set font & splashImage to null to force text
+Subject: [PATCH 2/9] azure-image: set font & splashImage to null to force text
  mode, so console for Gen 2 VM could work
 
 ---
@@ -241,7 +241,7 @@ index 59e41c0637471..4ae8849d50047 100644
 From 538efe32631b54a44b5eef7a829d9189abb32454 Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Fri, 29 Nov 2024 10:18:18 +0800
-Subject: [PATCH 3/8] nixos/azure: improve documentation
+Subject: [PATCH 3/9] nixos/azure: improve documentation
 
 ---
  nixos/doc/manual/release-notes/rl-2505.section.md |  2 ++
@@ -351,7 +351,7 @@ index 4ae8849d50047..252381d0f198b 100644
 From 2249c0859e81d94b4167d966a6e17ca23c9d8d7c Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Mon, 16 Dec 2024 12:16:20 +0800
-Subject: [PATCH 4/8] nixos/waagent: specify OS.OpensslPath by default
+Subject: [PATCH 4/9] nixos/waagent: specify OS.OpensslPath by default
 
 ---
  nixos/modules/virtualisation/waagent.nix | 9 +++++++++
@@ -381,7 +381,7 @@ index afdcfd6ebe350..e3436a21d9c22 100644
 From d3d6adec3691b85a548b9b563bba6a107474b144 Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Mon, 16 Dec 2024 19:49:19 +0800
-Subject: [PATCH 5/8] waagent: fix typo
+Subject: [PATCH 5/9] waagent: fix typo
 
 ---
  nixos/modules/virtualisation/waagent.nix | 2 +-
@@ -404,7 +404,7 @@ index e3436a21d9c22..c90f7a999a42a 100644
 From c198f97a75a6c5461a0b20c886e3e672c7e1e29b Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Fri, 20 Dec 2024 19:27:53 +0800
-Subject: [PATCH 6/8] waagent: remove passthru.updateScript as it is not needed
+Subject: [PATCH 6/9] waagent: remove passthru.updateScript as it is not needed
  for nixpkgs-update
 
 ---
@@ -443,7 +443,7 @@ index 9b21d6a53a8f8..e4240e932f61b 100644
 From 6c443658e6ed54bbe0ddb5f07dca91ca4db7ef8f Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Sun, 29 Dec 2024 19:07:38 +0800
-Subject: [PATCH 7/8] nixos/azure: improve code readability
+Subject: [PATCH 7/9] nixos/azure: improve code readability
 
 ---
  nixos/modules/virtualisation/azure-common.nix     | 15 +++++----------
@@ -513,7 +513,7 @@ index aa00ac1f40613..75bbc716bf7f2 100644
 From b5592e11652930dd8ce1ddcd91086967ec7b306b Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Sun, 12 Jan 2025 11:47:55 +0800
-Subject: [PATCH 8/8] nixos/azure: enable networking.useNetworkd
+Subject: [PATCH 8/9] nixos/azure: enable networking.useNetworkd
 
 ---
  nixos/modules/virtualisation/azure-common.nix | 3 +++
@@ -533,3 +533,64 @@ index 654adb65ed292..80196d74a1397 100644
      # Ensure kernel outputs to ttyS0 (Azure Serial Console),
      # and reboot machine upon fatal boot issues
      boot.kernelParams = [
+
+From b5a03db80725b5f798468f9badbac6dbf5da7f8a Mon Sep 17 00:00:00 2001
+From: codgician <15964984+codgician@users.noreply.github.com>
+Date: Tue, 21 Jan 2025 21:33:50 +0800
+Subject: [PATCH 9/9] waagent: patch openssl path
+
+---
+ nixos/modules/virtualisation/waagent.nix |  9 ---------
+ pkgs/by-name/wa/waagent/package.nix      | 11 +++++++----
+ 2 files changed, 7 insertions(+), 13 deletions(-)
+
+diff --git a/nixos/modules/virtualisation/waagent.nix b/nixos/modules/virtualisation/waagent.nix
+index c90f7a999a42a..8baa8381c2947 100644
+--- a/nixos/modules/virtualisation/waagent.nix
++++ b/nixos/modules/virtualisation/waagent.nix
+@@ -192,15 +192,6 @@ let
+             If set to `null`, the system defaults are used.
+           '';
+         };
+-
+-        OpensslPath = lib.mkOption {
+-          type = types.nullOr types.path;
+-          default = lib.getExe pkgs.openssl;
+-          defaultText = literalExpression "lib.getExe pkgs.openssl";
+-          description = ''
+-            Specify a path for the openssl binary to use for cryptographic operations.
+-          '';
+-        };
+       };
+ 
+       HttpProxy = {
+diff --git a/pkgs/by-name/wa/waagent/package.nix b/pkgs/by-name/wa/waagent/package.nix
+index e4240e932f61b..dab0a9cc2384d 100644
+--- a/pkgs/by-name/wa/waagent/package.nix
++++ b/pkgs/by-name/wa/waagent/package.nix
+@@ -4,6 +4,7 @@
+   lib,
+   python3,
+   bash,
++  openssl,
+   nixosTests,
+ }:
+ 
+@@ -30,11 +31,13 @@ python.pkgs.buildPythonApplication rec {
+   # Replace tools used in udev rules with their full path and ensure they are present.
+   postPatch = ''
+     substituteInPlace config/66-azure-storage.rules \
+-      --replace-fail readlink ${coreutils}/bin/readlink \
+-      --replace-fail cut ${coreutils}/bin/cut \
+-      --replace-fail /bin/sh ${bash}/bin/sh
++      --replace-fail readlink '${coreutils}/bin/readlink' \
++      --replace-fail cut '${coreutils}/bin/cut' \
++      --replace-fail '/bin/sh' '${bash}/bin/sh'
+     substituteInPlace config/99-azure-product-uuid.rules \
+-      --replace-fail "/bin/chmod" "${coreutils}/bin/chmod"
++      --replace-fail '/bin/chmod' '${coreutils}/bin/chmod'
++    substituteInPlace azurelinuxagent/common/conf.py \
++      --replace-fail '/usr/bin/openssl' '${openssl}/bin/openssl'
+   '';
+ 
+   propagatedBuildInputs = [ python.pkgs.distro ];
