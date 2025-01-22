@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, system, ... }:
 
 {
   imports = [
@@ -12,6 +12,8 @@
   };
 
   documentation.nixos.enable = false;
+
+  nixpkgs.hostPlatform = system;
 
   system = {
     stateVersion = "24.11";

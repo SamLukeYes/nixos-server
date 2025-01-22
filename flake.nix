@@ -44,6 +44,7 @@
     hostDefaults = {
       inherit system;
       channelName = "nixos-unstable";
+      specialArgs = { inherit system; };
 
       modules = [
         {
