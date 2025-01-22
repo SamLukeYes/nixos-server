@@ -28,7 +28,6 @@
     channel-patches = [
       # Add nixpkgs patches here
       ./patches/359365.patch  # azure
-      ./patches/375009.patch  # xonsh
     ];
 
   in flake-utils-plus.lib.mkFlake rec {
