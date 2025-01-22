@@ -14,8 +14,6 @@
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/sda";
 
-  networking.networkmanager.enable = true;
-
   synced.caddy-secret-file = "${config.synced.configDir}/caddy/bandwagon.env";
 
   programs.rust-motd.settings = {
