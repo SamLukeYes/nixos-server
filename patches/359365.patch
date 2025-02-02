@@ -1,7 +1,7 @@
 From 6b9a77767abaa07847b2353344ca9b07b2c3231a Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Wed, 27 Nov 2024 21:23:30 +0800
-Subject: [PATCH 1/9] nixos/azure: move image specific config out of
+Subject: [PATCH 01/10] nixos/azure: move image specific config out of
  azure-common
 
 ---
@@ -215,8 +215,8 @@ index 53021e635b073..59e41c0637471 100644
 From 0a0f6543ad671e7435fdb131590a2d5bccd9140a Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Thu, 28 Nov 2024 01:05:58 +0800
-Subject: [PATCH 2/9] azure-image: set font & splashImage to null to force text
- mode, so console for Gen 2 VM could work
+Subject: [PATCH 02/10] azure-image: set font & splashImage to null to force
+ text mode, so console for Gen 2 VM could work
 
 ---
  nixos/modules/virtualisation/azure-image.nix | 4 +++-
@@ -241,7 +241,7 @@ index 59e41c0637471..4ae8849d50047 100644
 From 538efe32631b54a44b5eef7a829d9189abb32454 Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Fri, 29 Nov 2024 10:18:18 +0800
-Subject: [PATCH 3/9] nixos/azure: improve documentation
+Subject: [PATCH 03/10] nixos/azure: improve documentation
 
 ---
  nixos/doc/manual/release-notes/rl-2505.section.md |  2 ++
@@ -351,7 +351,7 @@ index 4ae8849d50047..252381d0f198b 100644
 From 2249c0859e81d94b4167d966a6e17ca23c9d8d7c Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Mon, 16 Dec 2024 12:16:20 +0800
-Subject: [PATCH 4/9] nixos/waagent: specify OS.OpensslPath by default
+Subject: [PATCH 04/10] nixos/waagent: specify OS.OpensslPath by default
 
 ---
  nixos/modules/virtualisation/waagent.nix | 9 +++++++++
@@ -381,7 +381,7 @@ index afdcfd6ebe350..e3436a21d9c22 100644
 From d3d6adec3691b85a548b9b563bba6a107474b144 Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Mon, 16 Dec 2024 19:49:19 +0800
-Subject: [PATCH 5/9] waagent: fix typo
+Subject: [PATCH 05/10] waagent: fix typo
 
 ---
  nixos/modules/virtualisation/waagent.nix | 2 +-
@@ -404,8 +404,8 @@ index e3436a21d9c22..c90f7a999a42a 100644
 From c198f97a75a6c5461a0b20c886e3e672c7e1e29b Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Fri, 20 Dec 2024 19:27:53 +0800
-Subject: [PATCH 6/9] waagent: remove passthru.updateScript as it is not needed
- for nixpkgs-update
+Subject: [PATCH 06/10] waagent: remove passthru.updateScript as it is not
+ needed for nixpkgs-update
 
 ---
  pkgs/by-name/wa/waagent/package.nix | 10 ++--------
@@ -443,7 +443,7 @@ index 9b21d6a53a8f8..e4240e932f61b 100644
 From 6c443658e6ed54bbe0ddb5f07dca91ca4db7ef8f Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Sun, 29 Dec 2024 19:07:38 +0800
-Subject: [PATCH 7/9] nixos/azure: improve code readability
+Subject: [PATCH 07/10] nixos/azure: improve code readability
 
 ---
  nixos/modules/virtualisation/azure-common.nix     | 15 +++++----------
@@ -513,7 +513,7 @@ index aa00ac1f40613..75bbc716bf7f2 100644
 From b5592e11652930dd8ce1ddcd91086967ec7b306b Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Sun, 12 Jan 2025 11:47:55 +0800
-Subject: [PATCH 8/9] nixos/azure: enable networking.useNetworkd
+Subject: [PATCH 08/10] nixos/azure: enable networking.useNetworkd
 
 ---
  nixos/modules/virtualisation/azure-common.nix | 3 +++
@@ -537,7 +537,7 @@ index 654adb65ed292..80196d74a1397 100644
 From b5a03db80725b5f798468f9badbac6dbf5da7f8a Mon Sep 17 00:00:00 2001
 From: codgician <15964984+codgician@users.noreply.github.com>
 Date: Tue, 21 Jan 2025 21:33:50 +0800
-Subject: [PATCH 9/9] waagent: patch openssl path
+Subject: [PATCH 09/10] waagent: patch openssl path
 
 ---
  nixos/modules/virtualisation/waagent.nix |  9 ---------
@@ -594,3 +594,124 @@ index e4240e932f61b..dab0a9cc2384d 100644
    '';
  
    propagatedBuildInputs = [ python.pkgs.distro ];
+
+From 1460db45f63a3d402aaff35b7463805c2b6d98a1 Mon Sep 17 00:00:00 2001
+From: codgician <15964984+codgician@users.noreply.github.com>
+Date: Sun, 2 Feb 2025 16:12:00 +0800
+Subject: [PATCH 10/10] waagent: optimize option descriptions
+
+---
+ nixos/modules/virtualisation/waagent.nix | 70 +++++++++++++++---------
+ 1 file changed, 44 insertions(+), 26 deletions(-)
+
+diff --git a/nixos/modules/virtualisation/waagent.nix b/nixos/modules/virtualisation/waagent.nix
+index 8baa8381c2947..5d08bb544b3d4 100644
+--- a/nixos/modules/virtualisation/waagent.nix
++++ b/nixos/modules/virtualisation/waagent.nix
+@@ -110,14 +110,18 @@ let
+       };
+ 
+       ResourceDisk = {
+-        Format = mkEnableOption ''
+-          If set to `true`, waagent formats and mounts the resource disk that the platform provides,
+-          unless the file system type in `ResourceDisk.FileSystem` is set to `ntfs`.
+-          The agent makes a single Linux partition (ID 83) available on the disk.
+-          This partition isn't formatted if it can be successfully mounted.
++        Format = mkOption {
++          type = types.bool;
++          default = false;
++          description = ''
++            If set to `true`, waagent formats and mounts the resource disk that the platform provides,
++            unless the file system type in `ResourceDisk.FileSystem` is set to `ntfs`.
++            The agent makes a single Linux partition (ID 83) available on the disk.
++            This partition isn't formatted if it can be successfully mounted.
+ 
+-          This configuration has no effect if resource disk is managed by cloud-init.
+-        '';
++            This configuration has no effect if resource disk is managed by cloud-init.
++          '';
++        };
+ 
+         FileSystem = mkOption {
+           type = types.str;
+@@ -155,12 +159,16 @@ let
+           '';
+         };
+ 
+-        EnableSwap = mkEnableOption ''
+-          If enabled, the agent creates a swap file (`/swapfile`) on the resource disk
+-          and adds it to the system swap space.
++        EnableSwap = mkOption {
++          type = types.bool;
++          default = false;
++          description = ''
++            If enabled, the agent creates a swap file (`/swapfile`) on the resource disk
++            and adds it to the system swap space.
+ 
+-          This configuration has no effect if resource disk is managed by cloud-init.
+-        '';
++            This configuration has no effect if resource disk is managed by cloud-init.
++          '';
++        };
+ 
+         SwapSizeMB = mkOption {
+           type = types.int;
+@@ -173,16 +181,24 @@ let
+         };
+       };
+ 
+-      Logs.Verbose = lib.mkEnableOption ''
+-        If you set this option, log verbosity is boosted.
+-        Waagent logs to `/var/log/waagent.log` and uses the system logrotate functionality to rotate logs.
+-      '';
++      Logs.Verbose = lib.mkOption {
++        type = types.bool;
++        default = false;
++        description = ''
++          If you set this option, log verbosity is boosted.
++          Waagent logs to `/var/log/waagent.log` and uses the system logrotate functionality to rotate logs.
++        '';
++      };
+ 
+       OS = {
+-        EnableRDMA = lib.mkEnableOption ''
+-          If enabled, the agent attempts to install and then load an RDMA kernel driver
+-          that matches the version of the firmware on the underlying hardware.
+-        '';
++        EnableRDMA = lib.mkOption {
++          type = types.bool;
++          default = false;
++          description = ''
++            If enabled, the agent attempts to install and then load an RDMA kernel driver
++            that matches the version of the firmware on the underlying hardware.
++          '';
++        };
+ 
+         RootDeviceScsiTimeout = lib.mkOption {
+           type = types.nullOr types.int;
+@@ -212,17 +228,19 @@ let
+         };
+       };
+ 
+-      AutoUpdate.Enable = lib.mkEnableOption ''
+-        Enable or disable autoupdate for goal state processing.
+-      '';
++      AutoUpdate.Enable = lib.mkOption {
++        type = types.bool;
++        default = false;
++        description = ''
++          Whether or not to enable autoupdate for goal state processing.
++        '';
++      };
+     };
+   };
+ in
+ {
+   options.services.waagent = {
+-    enable = lib.mkEnableOption ''
+-      Whether to enable the Windows Azure Linux Agent.
+-    '';
++    enable = lib.mkEnableOption "Windows Azure Linux Agent";
+ 
+     package = lib.mkPackageOption pkgs "waagent" { };
+ 
