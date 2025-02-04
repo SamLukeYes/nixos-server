@@ -27,7 +27,6 @@
     system = "x86_64-linux";
     channel-patches = [
       # Add nixpkgs patches here
-      ./patches/359365.patch  # azure
     ];
 
   in flake-utils-plus.lib.mkFlake rec {
