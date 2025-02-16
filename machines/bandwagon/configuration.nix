@@ -28,6 +28,7 @@
 
   users.users.root = {
     openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPfaIo18sdaspu3ecLvBWgLheGAeMt3IEoyyeQ0PnE7Y root@absolute"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkfDt1Bv2cjUSRFgZpRC3WBD/zUoY7QWmjnaptYUHXm yes@absolute"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJhnrz/WzdK/jLp24kuVRY5J2RP94Jgzj+Ls0zw/kIxK Amaryllis"
     ];
