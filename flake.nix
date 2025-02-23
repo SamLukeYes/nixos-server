@@ -31,6 +31,7 @@
 
   in flake-utils-plus.lib.mkFlake rec {
     inherit self inputs;
+    inherit (nixpkgs) lib;
     supportedSystems = [ system ];
 
     channels = {
@@ -38,6 +39,12 @@
         input = nixpkgs;
         patches = channel-patches;
       };
+    };
+
+    channelsConfig = {
+      allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+        "cloudflare-warp"
+      ];
     };
 
     hostDefaults = {
