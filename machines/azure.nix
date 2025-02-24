@@ -1,4 +1,4 @@
-{ config, modulesPath, ... }:
+{ config, modulesPath, pkgs, ... }:
 
 {
   imports = [
@@ -12,6 +12,9 @@
     last_login.azureuser = 5;
     service_status.waagent = "waagent";
   };
+
+  # https://github.com/NixOS/nixpkgs/pull/362101#issuecomment-2602406516
+  services.waagent.settings.OS.OpensslPath = "${pkgs.openssl}/bin/openssl";
 
   swapDevices = [{
     device = "/var/swapfile";
