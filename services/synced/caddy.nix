@@ -18,7 +18,12 @@
     services.caddy = {
       enable = true;
       environmentFile = config.synced.caddy-secret-file;
-      virtualHosts.myDomain.hostName = "{$DOMAIN_NAME}";
+      virtualHosts.myDomain = {
+        hostName = "{$DOMAIN_NAME}";
+        logFormat = ''
+          output file ${config.services.caddy.logDir}/access.log
+        '';
+      };
     };
 
     # run `systemd-tmpfiles --create && systemctl restart caddy` after creating new secret file
