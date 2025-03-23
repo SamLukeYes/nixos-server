@@ -5,5 +5,8 @@
     ./xonsh.nix
   ];
 
-  programs.git.enable = true;
+  programs = {
+    bat.enable = true;
+    git.enable = true;
+  };
 }
