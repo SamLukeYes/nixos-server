@@ -76,6 +76,7 @@
       ];
 
       bandwagon.modules = [
+        ./services/endlessh.nix
         ./machines/bandwagon/configuration.nix
       ];
     };
