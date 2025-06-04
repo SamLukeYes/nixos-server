@@ -19,6 +19,7 @@
     stateVersion = "24.11";
     rebuild.enableNg = true;
     switch.enableNg = true;
+    tools.nixos-option.enable = false;  # introduces cppnix dependency
   };
 
   time.timeZone = "Asia/Hong_Kong";
