@@ -10,7 +10,7 @@
     };
 
     optimise.automatic = true;
-    package = pkgs.lix;
+    package = pkgs.nix;
 
     settings = {
       builders-use-substitutes = true;
