@@ -24,9 +24,10 @@
     qemuGuest.enable = true;
   };
 
-  swapDevices = [ 
-    { device = "/swap"; }
-  ];
+  # Add to machine-specific config manually after copying swap file from old-root
+  # swapDevices = [ 
+  #   { device = "/swap"; }
+  # ];
 
   users.users.root = {
     initialHashedPassword = "";

@@ -6,7 +6,7 @@ Steps to add a new server:
 
 2. Add a new configuration to this repo based on `nixos-generate-config` result on target host, with ssh and public keys configured
 
-3. Create `/etc/NIXOS` and `/etc/NIXOS_LUSTRATE` on target host, optionally with ssh host key paths in `NIXOS_LUSTRATE` file
+3. Create `/etc/NIXOS` and `/etc/NIXOS_LUSTRATE` on target host
 
 4. Run `sudo mkdir /boot.bak && sudo mv /boot/* /boot.bak` on target host
 
@@ -31,3 +31,5 @@ warp-cli registration new
 warp-cli mode proxy
 warp-cli connect
 ```
+
+11. Set up swap file and redeploy

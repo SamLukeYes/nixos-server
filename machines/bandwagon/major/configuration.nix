@@ -11,5 +11,9 @@
       ../common.nix
     ];
 
+  swapDevices = [ 
+    { device = "/swap"; }
+  ];
+
   synced.caddy-secret-file = "${config.synced.configDir}/caddy/bandwagon.env";
 }
