@@ -76,8 +76,11 @@
       ];
 
       bandwagon.modules = [
-        ./services/endlessh.nix
-        ./machines/bandwagon/configuration.nix
+        ./machines/bandwagon/major/configuration.nix
+      ];
+
+      bandwagon-mini.modules = [
+        ./machines/bandwagon/mini/configuration.nix
       ];
     };
 
@@ -97,6 +100,14 @@
         hostname = "bandwagon";
         profiles.system = {
           path = inputs.deploy-rs.lib.${system}.activate.nixos self.nixosConfigurations.bandwagon;
+          sshUser = "root";
+        };
+      };
+
+      bandwagon-mini = {
+        hostname = "bandwagon-mini";
+        profiles.system = {
+          path = inputs.deploy-rs.lib.${system}.activate.nixos self.nixosConfigurations.bandwagon-mini;
           sshUser = "root";
         };
       };
