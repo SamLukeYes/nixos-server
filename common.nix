@@ -18,7 +18,6 @@
   system = {
     stateVersion = "25.11";
     rebuild.enableNg = true;
-    switch.enableNg = true;
     tools.nixos-option.enable = false;  # introduces cppnix dependency
   };
 
