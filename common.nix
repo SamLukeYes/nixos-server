@@ -16,7 +16,7 @@
   nixpkgs.hostPlatform = system;
 
   system = {
-    stateVersion = "24.11";
+    stateVersion = "25.11";
     rebuild.enableNg = true;
     switch.enableNg = true;
     tools.nixos-option.enable = false;  # introduces cppnix dependency
