@@ -14,6 +14,8 @@
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/sda";
 
+  networking.networkmanager.enable = true;
+
   programs.rust-motd.settings = {
     last_login.root = 5;
     service_status.qemu-guest-agent = "qemu-guest-agent";
