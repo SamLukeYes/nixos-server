@@ -22,7 +22,6 @@
   };
 
   services = {
-    openssh.ports = [ 24107 ];
     qemuGuest.enable = true;
   };
 
