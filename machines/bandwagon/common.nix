@@ -36,6 +36,7 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPfaIo18sdaspu3ecLvBWgLheGAeMt3IEoyyeQ0PnE7Y root@absolute"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkfDt1Bv2cjUSRFgZpRC3WBD/zUoY7QWmjnaptYUHXm yes@absolute"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOJqjLdDHqsHN8uYZS69XhCYfCt3v+RCwSsBQKjbEfM Amaryllis"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHM4SyKvpf1YFFg1OM4znfXtH3m59+NV7LhdzANKom8g alarm"
     ];
   };
 }
