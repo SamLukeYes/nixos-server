@@ -1,4 +1,4 @@
-{ config, lib, system, ... }:
+{ config, lib, pkgs, system, ... }:
 
 {
   imports = [
@@ -7,6 +7,7 @@
   ];
 
   boot = {
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
     kernelParams = lib.optional (!config.zramSwap.enable) "zswap.enabled=1";
     kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
   };
