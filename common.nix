@@ -7,7 +7,7 @@
   ];
 
   boot = {
-    kernelPackages = pkgs.linuxPackagesFor pkgs.linux_latest;
+    kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = lib.optional (!config.zramSwap.enable) "zswap.enabled=1";
     kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
   };
