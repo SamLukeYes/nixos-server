@@ -7,7 +7,7 @@
   ];
 
   boot = {
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
+    kernelPackages = pkgs.linuxKernel.packages.linux_latest;
     kernelParams = lib.optional (!config.zramSwap.enable) "zswap.enabled=1";
     kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
   };
@@ -17,7 +17,7 @@
   nixpkgs.hostPlatform = system;
 
   system = {
-    stateVersion = "25.11";
+    stateVersion = "26.05";
     rebuild.enableNg = true;
     tools.nixos-option.enable = false;  # introduces cppnix dependency
   };
