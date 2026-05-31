@@ -14,6 +14,8 @@
 
   documentation.nixos.enable = false;
 
+  environment.defaultPackages = [];
+
   nixpkgs.hostPlatform = system;
 
   system = {
