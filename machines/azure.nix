@@ -8,6 +8,8 @@
 
   nix.settings.trusted-users = [ "azureuser" ];
 
+  boot.loader.grub.device = "/dev/sdb";
+
   programs.rust-motd.settings = {
     last_login.azureuser = 5;
     service_status.waagent = "waagent";
