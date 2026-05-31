@@ -8,7 +8,7 @@
 
   nix.settings.trusted-users = [ "azureuser" ];
 
-  boot.loader.grub.device = "/dev/sdb";
+  boot.loader.grub.devices = [ "/dev/sdb" ];
 
   programs.rust-motd.settings = {
     last_login.azureuser = 5;
