@@ -7,7 +7,7 @@
   ];
 
   boot = {
-    kernelPackages = pkgs.linuxKernel.packages.linux_latest;
+    kernelPackages = pkgs.linuxPackagesFor pkgs.linux_latest;
     kernelParams = lib.optional (!config.zramSwap.enable) "zswap.enabled=1";
     kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
   };
@@ -20,7 +20,6 @@
 
   system = {
     stateVersion = "26.05";
-    rebuild.enableNg = true;
     tools.nixos-option.enable = false;  # introduces cppnix dependency
   };
 
