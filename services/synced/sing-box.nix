@@ -32,5 +32,10 @@
         }
       '';
     };
+
+    networking.firewall = rec {
+      allowedTCPPorts = [ 1443 ];
+      allowedUDPPorts = allowedTCPPorts;
+    };
   };
 }
