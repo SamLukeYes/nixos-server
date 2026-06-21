@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776700153,
-        "narHash": "sha256-19dy8R/HprsReIzvqCYwf8zjwQyX15RAOesANEvy3nA=",
+        "lastModified": 1781799867,
+        "narHash": "sha256-Xbpq17XG6WXwOvIabayU5KF2LnHaxNiTpM6QZp4En8M=",
         "owner": "SamLukeYes",
         "repo": "archix",
-        "rev": "ad79d52beb781aed0bfaa5ca570fd72bafcd702d",
+        "rev": "4fb1f5c5120c66be934dc017a05c5658284e3a0d",
         "type": "github"
       },
       "original": {
@@ -29,11 +29,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1781023725,
-        "narHash": "sha256-Gt+qFANcrDRjl3xzidLYrAUQCd3808iuAsLwZbYYAEU=",
+        "lastModified": 1781627888,
+        "narHash": "sha256-5yHuAh9k7rT7rtf3uRaXkiUyYvQE9oaCgzhprLm2mr8=",
         "owner": "serokell",
         "repo": "deploy-rs",
-        "rev": "2ce9051767ee4d1a3c43b52ba327431783bfd463",
+        "rev": "6d3087eedff75a715b40c0e124ba15d2dd7bec28",
         "type": "github"
       },
       "original": {
@@ -101,11 +101,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780816331,
-        "narHash": "sha256-0BYqs8yKWkOz2Q7+SP18N5E5gmDKSo6LSxIVIa0wWes=",
+        "lastModified": 1781422160,
+        "narHash": "sha256-W7S8O86bVrw2gaomEwkHStOzmPpnFIHQ6lS4Q2HffJ0=",
         "owner": "nix-community",
         "repo": "nix-index-database",
-        "rev": "1a2ea89c917781e88508d9fd2b507f2d2a0e173c",
+        "rev": "854d04e2368fb2e9c328a36b3c0a04cd713bfae1",
         "type": "github"
       },
       "original": {
