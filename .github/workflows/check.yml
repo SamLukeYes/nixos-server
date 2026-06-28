@@ -3,8 +3,6 @@ name: Flake check
 on:
   workflow_dispatch:
   push:
-    branches:
-      - update_flake_lock_action
 
 jobs:
   build-nixos:
