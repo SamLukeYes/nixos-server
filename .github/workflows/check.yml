@@ -2,10 +2,12 @@ name: Flake check
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
+    paths:
+      - 'flake.lock'
 
 jobs:
-  build-nixos:
+  flake-check:
     runs-on: ubuntu-latest
     permissions:
       contents: read
