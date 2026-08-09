@@ -20,6 +20,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/nix-index-database";
     };
+
+    preservation.url = "github:nix-community/preservation";
   };
 
   outputs = { self, nixpkgs, flake-utils-plus, ... }@inputs: 
@@ -27,6 +29,10 @@
     system = "x86_64-linux";
     channel-patches = [
       # Add nixpkgs patches here
+    ];
+    preservation-modules = [
+      inputs.preservation.nixosModules.preservation
+      ./preservation.nix
     ];
 
   in flake-utils-plus.lib.mkFlake rec {
@@ -82,6 +88,10 @@
       bandwagon-mini.modules = [
         ./machines/bandwagon/mini/configuration.nix
       ];
+
+      bandwagon-cn2gia.modules = [
+        ./machines/bandwagon/cn2gia/configuration.nix
+      ] ++ preservation-modules;
     };
 
     checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
@@ -108,6 +118,14 @@
         hostname = "bandwagon-mini";
         profiles.system = {
           path = inputs.deploy-rs.lib.${system}.activate.nixos self.nixosConfigurations.bandwagon-mini;
+          sshUser = "root";
+        };
+      };
+
+      bandwagon-cn2gia = {
+        hostname = "bandwagon-cn2gia";
+        profiles.system = {
+          path = inputs.deploy-rs.lib.${system}.activate.nixos self.nixosConfigurations.bandwagon-cn2gia;
           sshUser = "root";
         };
       };

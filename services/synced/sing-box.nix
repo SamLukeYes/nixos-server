@@ -37,5 +37,9 @@
       allowedTCPPorts = [ 1443 ];
       allowedUDPPorts = allowedTCPPorts;
     };
+
+    systemd.tmpfiles.rules = [
+      "a ${config.synced.sing-box-inbounds} - - - - u:sing-box:r"
+    ];
   };
 }

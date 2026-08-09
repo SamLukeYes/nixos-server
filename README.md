@@ -2,13 +2,13 @@
 
 Steps to add a new server:
 
-1. Install Nix on target host and add substituters to `/etc/nix/nix.conf`
+1. Install Nix on target host with flakes enabled, and add substituters to `/etc/nix/nix.conf`
 
-2. Add a new configuration to this repo based on `nixos-generate-config` result on target host, with ssh and public keys configured
+2. Add a new configuration to this repo based on `nixos-generate-config` result on target host, with ssh and public keys configured, and adapt with preservation
 
-3. Create `/etc/NIXOS` and `/etc/NIXOS_LUSTRATE` on target host
+3. Create `/etc/NIXOS` and `/nixos/etc/NIXOS` on target host (also copy ssh keys here to prevent step 7?)
 
-4. Run `sudo mkdir /boot.bak && sudo mv /boot/* /boot.bak` on target host
+4. Run `sudo tar acvf boot.tar.gz /boot` on target host, and backup `boot.tar.gz` locally
 
 5. `nixos-rebuild boot --flake '.#<new_server>' --target-host <new_server> --substitute-on-destination`
 
@@ -31,5 +31,3 @@ warp-cli registration new
 warp-cli mode proxy
 warp-cli connect
 ```
-
-11. Set up swap file and redeploy
