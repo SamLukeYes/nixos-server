@@ -10,4 +10,7 @@
       };
     };
   };
+
+  # let fastfetch see mount points other than /
+  systemd.services.rust-motd.serviceConfig.PrivateDevices = lib.mkForce false;
 }
