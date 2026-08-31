@@ -75,12 +75,6 @@
     };
 
     hosts = {
-      azure.modules = [
-        inputs.archix.nixosModules.default
-        ./programs/pacman.nix
-        ./machines/azure.nix
-      ];
-
       bandwagon.modules = [
         ./machines/bandwagon/major/configuration.nix
       ];
@@ -97,15 +91,6 @@
     checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
 
     deploy.nodes = {
-      azure = {
-        hostname = "azure";
-        profiles.system = {
-          path = inputs.deploy-rs.lib.${system}.activate.nixos self.nixosConfigurations.azure;
-          sshUser = "azureuser";
-          user = "root";
-        };
-      };
-
       bandwagon = {
         hostname = "bandwagon";
         profiles.system = {
