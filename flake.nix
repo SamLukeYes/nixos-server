@@ -4,11 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
-    archix = {
-      inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:SamLukeYes/archix";
-    };
-
     deploy-rs = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:serokell/deploy-rs";
