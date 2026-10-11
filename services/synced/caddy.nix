@@ -26,9 +26,16 @@
       };
     };
 
-    # run `systemd-tmpfiles --create && systemctl restart caddy` after creating new secret file
-    systemd.tmpfiles.rules = [
-      "a ${config.synced.caddy-secret-file} - - - - u:${config.services.caddy.user}:r"
-    ];
+    systemd = {
+      services.sing-box.serviceConfig = {
+        RestartSteps = 5;
+        RestartMaxDelaySec = "15min";
+      };
+
+      # run `systemd-tmpfiles --create && systemctl restart caddy` after creating new secret file
+      tmpfiles.rules = [
+        "a ${config.synced.caddy-secret-file} - - - - u:${config.services.caddy.user}:r"
+      ];
+    };
   };
 }
